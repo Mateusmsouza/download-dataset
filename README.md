@@ -1,0 +1,1 @@
+Code created to download and gather Flickr images from paper https://mm.doshisha.ac.jp/senti/CrossSentiment.html
