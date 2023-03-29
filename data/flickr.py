@@ -7,13 +7,17 @@ api_key = os.getenv('FLICKR_API_KEY')
 api_secret = os.getenv('FLICKR_SECRET')
 
 def download_image_by_id(photo_id: str, save_on_dir: str) -> str:
+    save_path = f'{save_on_dir}'
+    image_dir = f'{save_path}/{photo_id}'
+
+    if os.path.exists(image_dir) and not len(os.listdir(image_dir)) == 0:
+        raise OSError
+
     # Set up the Flickr API client
     flickr = flickrapi.FlickrAPI(api_key, api_secret, format='parsed-json')
     # Get the URL of the photo with the given ID
     photo_info = flickr.photos.getInfo(photo_id=photo_id)
     caption = photo_info['photo']['description']['_content']
-    # Set the path where you want to save the downloaded image
-    save_path = f'{save_on_dir}'
 
     sizes = flickr.photos.getSizes(photo_id=photo_id)['sizes']['size']
     medium_size = next((size for size in sizes if size['label'] == 'Medium'), None)
@@ -23,7 +27,7 @@ def download_image_by_id(photo_id: str, save_on_dir: str) -> str:
     medium_large_size = large_size['source']
 
     # Create the save path directory if it does not exist
-    image_dir = f'{save_path}/{photo_id}'
+    # Set the path where you want to save the downloaded image
     os.makedirs(image_dir, exist_ok=True)
 
     # Download images    
