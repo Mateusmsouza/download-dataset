@@ -16,8 +16,8 @@ class NeutralRowException(Exception):
 class FlickrService:
 
     def __init__(self, max_negative=500, max_positive=500) -> None:
-        self.__max_negative = 500
-        self.__max_positive = 500
+        self.__max_negative = 3000
+        self.__max_positive = 3000
         LOGGER.debug('Starting Flickr service')
 
     def __read_database(self) -> pd.DataFrame:
@@ -44,8 +44,8 @@ class FlickrService:
             f_object.close()
 
     def download_images(self):
-        nagetive_images_downloaded = 0
-        positive_images_downloaded = 923
+        nagetive_images_downloaded = 837
+        positive_images_downloaded = 1325
         df_csv = self.__read_database()
         for _, row in df_csv.iterrows():
             try:
@@ -56,15 +56,12 @@ class FlickrService:
                     positive_images_downloaded += 1
                 else:
                     sentiment = 'negative'
+                    image_id = row['ImageID']
+                    caption = download_image_by_id(
+                        photo_id=image_id,
+                        save_on_dir=f'dataset-images/{sentiment}')
+                    self.__create_csv_caption(image_id, caption)
                     nagetive_images_downloaded += 1
-
-
-                
-                image_id = row['ImageID']
-                caption = download_image_by_id(
-                    photo_id=image_id,
-                    save_on_dir=f'dataset-images/{sentiment}')
-                self.__create_csv_caption(image_id, caption)
                 
                 if positive_images_downloaded >= self.__max_positive and nagetive_images_downloaded >= self.__max_negative:
                     LOGGER.info(
